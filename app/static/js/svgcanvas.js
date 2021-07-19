@@ -5337,13 +5337,10 @@ $.SvgCanvas = function (container, config) {
   };
 
   // Function: postSVG
-  // Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
-  // This function also includes the XML prolog.  Clients of the SvgCanvas bind their save
-  // function to the 'saved' event.
   //
   // Returns: 
   // Nothing
-  this.save = function () {
+  this.postSVG = function () {
     // remove the selected outline before serializing
     clearSelection();
     save_options.apply = true;
@@ -5353,11 +5350,31 @@ $.SvgCanvas = function (container, config) {
     var illutratorCompat = true;
     if (illutratorCompat && str.includes(" href=")) str = str.replace(" href=", " xlink:href=");
     var blob = new Blob([str], { type: "image/svg+xml;charset=utf-8" });
-    var dropAutoBOM = true;
-    var title = state.get("canvasTitle");
-    var filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    var extension = "svg";
-    saveAs(blob, `${filename}.${extension}`, dropAutoBOM);
+
+    console.log(blob);
+
+    // POST
+    fetch(`${window.origin}/svg`, {
+
+      // Declare what type of data we're sending
+      headers: {
+        'Content-Type': 'application/json'
+      },
+
+      // Specify the method
+      method: 'POST',
+
+      // A JSON payload
+      body: blob
+    }).then(function (response) { // At this point, Flask has printed our JSON
+      return response.text();
+    }).then(function (text) {
+
+      console.log('POST response: ');
+
+      // Should be 'OK' if everything was successful
+      console.log(text);
+    });
   };
 
   // Function: rasterExport

@@ -25,6 +25,7 @@ MD.Editor = function () {
   }
 
   function postSVG() {
+    console.log('posting SVG');
     svgCanvas.postSVG();
   }
 
@@ -383,6 +384,7 @@ MD.Editor = function () {
   this.switchPaint = switchPaint;
   this.focusPaint = focusPaint;
   this.save = save;
+  this.postSVG = postSVG;
   this.undo = undo;
   this.redo = redo;
   this.clear = clear;
