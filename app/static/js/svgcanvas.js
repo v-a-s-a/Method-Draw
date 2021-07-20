@@ -5354,11 +5354,11 @@ $.SvgCanvas = function (container, config) {
     console.log(blob);
 
     // POST
-    fetch(`${window.origin}/svg`, {
+    fetch("http://127.0.0.1:5000/svg", {
 
       // Declare what type of data we're sending
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'image/svg+xml;charset=utf-8'
       },
 
       // Specify the method
