@@ -9,7 +9,7 @@ random.seed(1234)
 torch.manual_seed(1234)
 
 
-def refine_svg(svg, num_iter=10, use_lpips_loss=True):
+def refine_svg(svg, num_iter=10, use_lpips_loss=False):
     perception_loss = ttools.modules.LPIPS().to(pydiffvg.get_device())
 
     target_image = "static/assets/Phillips_PM5540.jpg"
@@ -36,29 +36,24 @@ def refine_svg(svg, num_iter=10, use_lpips_loss=True):
         *scene_args
     )
 
-    print(shapes)
-    print()
-    print(shape_groups)
-
     points_vars = []
     for path in shapes:
         path.points.requires_grad = True
         points_vars.append(path.points)
-    color_vars = {}
     for group in shape_groups:
-        group.fill_color.requires_grad = True
-        color_vars[group.fill_color.data_ptr()] = group.fill_color
-    color_vars = list(color_vars.values())
+        if group.fill_color:
+            group.fill_color.requires_grad = True
+            color_vars[group.fill_color.data_ptr()] = group.fill_color
+
+    print(points_vars)
 
     # Optimize
     points_optim = torch.optim.Adam(points_vars, lr=1.0)
-    color_optim = torch.optim.Adam(color_vars, lr=0.01)
 
     # Adam iterations.
     for t in range(num_iter):
         print("iteration:", t)
         points_optim.zero_grad()
-        color_optim.zero_grad()
         # Forward pass: render the image.
         scene_args = pydiffvg.RenderFunction.serialize_scene(
             canvas_width, canvas_height, shapes, shape_groups
@@ -92,9 +87,6 @@ def refine_svg(svg, num_iter=10, use_lpips_loss=True):
 
         # Take a gradient descent step.
         points_optim.step()
-        color_optim.step()
-        for group in shape_groups:
-            group.fill_color.data.clamp_(0.0, 1.0)
 
     refined_svg = pydiffvg.stringify_svg(
         canvas_width,
