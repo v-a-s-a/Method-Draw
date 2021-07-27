@@ -39,5 +39,16 @@ state.set("canvasTitle", svgCanvas.getDocumentTitle());
 //editor.paintBox.stroke.setPaint(state.get("canvasStroke"));
 //editor.paintBox.canvas.setPaint(state.get("canvasBackground"));
 
+var socket = io();
+
+socket.on('connect', function () {
+  socket.emit("message", { data: 'Client Websocket connection established.' });
+});
+
+socket.onmessage = function (event) {
+  console.log("Data received");
+};
+
+
 document.body.classList.remove("loading");
 document.getElementById("svgcanvas").removeAttribute("title");

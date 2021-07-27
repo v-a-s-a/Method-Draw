@@ -1,6 +1,12 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
+import json
+import xml.etree.ElementTree as etree
+
+from refine_svg import refine_svg
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
 @app.route("/")
@@ -8,15 +14,14 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/svg", methods=["GET", "POST"])
-def svg():
-    # GET request
-    if request.method == "GET":
-        message = {"greeting": "hi from the server"}
-        return jsonify(message)  # serialize and use JSON headers
+@socketio.on("svg")
+def handle_message(data):
+    print("received message: " + str(data))
+    root = etree.fromstring(data)
+    refined_svg = refine_svg(root)
+    # emit("svg", refined_svg)
+    # print("sent svg")
 
-    # POST request
-    if request.method == "POST":
-        print(request.get_json())  # parse as JSON
-        return "Sucesss", 200
 
+if __name__ == "__main__":
+    socketio.run(app)

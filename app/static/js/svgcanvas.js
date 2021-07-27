@@ -5351,30 +5351,8 @@ $.SvgCanvas = function (container, config) {
     if (illutratorCompat && str.includes(" href=")) str = str.replace(" href=", " xlink:href=");
     var blob = new Blob([str], { type: "image/svg+xml;charset=utf-8" });
 
-    console.log(blob);
+    socket.emit("svg", blob)
 
-    // POST
-    fetch("http://127.0.0.1:5000/svg", {
-
-      // Declare what type of data we're sending
-      headers: {
-        'Content-Type': 'image/svg+xml;charset=utf-8'
-      },
-
-      // Specify the method
-      method: 'POST',
-
-      // A JSON payload
-      body: blob
-    }).then(function (response) { // At this point, Flask has printed our JSON
-      return response.text();
-    }).then(function (text) {
-
-      console.log('POST response: ');
-
-      // Should be 'OK' if everything was successful
-      console.log(text);
-    });
   };
 
   // Function: rasterExport
