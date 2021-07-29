@@ -5347,7 +5347,7 @@ $.SvgCanvas = function (container, config) {
 
     // no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
     var str = this.svgCanvasToString();
-    var illutratorCompat = true;
+    var illutratorCompat = false;
     if (illutratorCompat && str.includes(" href=")) str = str.replace(" href=", " xlink:href=");
     var blob = new Blob([str], { type: "image/svg+xml;charset=utf-8" });
 

@@ -45,9 +45,9 @@ socket.on('connect', function () {
   socket.emit("message", { data: 'Client Websocket connection established.' });
 });
 
-socket.onmessage = function (event) {
-  console.log("Data received");
-};
+socket.addEventListener('svg', function (event) {
+  console.log('Message from server ', event);
+});
 
 
 document.body.classList.remove("loading");
